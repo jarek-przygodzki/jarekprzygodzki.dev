@@ -7,6 +7,7 @@ draft: false
 ---
 
 Keeping Docker images as small as possible has a lot of practical benefits. But even when following best practices 
+
 - use stripped-down base image
 - utilize multi-stage builds
 - don't install what you don't need
