@@ -1,3 +1,7 @@
 [submodule "blog/themes/minimal"]
 	path = blog/themes/minimal
 	url = https://github.com/calintat/minimal.git
+[submodule "blog/public"]
+	path = blog/public
+	url = git@github.com:jarek-przygodzki/jarek-przygodzki.github.io
+	branch = master
