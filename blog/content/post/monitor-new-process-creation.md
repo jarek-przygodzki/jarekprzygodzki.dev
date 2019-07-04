@@ -28,7 +28,7 @@ Time     Event   PID Info   Duration Process
 21:21:40 exit   3384      0  10.003s sleep 10
 
 {{< / highlight >}}
-Requires root privilege (CAP_NET_ADMIN capability).
+Requires root privilege (or CAP_NET_ADMIN capability). Developed by [Colin Ian King](https://twitter.com/colinianking).
 
 
 ### execsnoop  (eBPF)
@@ -43,7 +43,7 @@ PCOMM            PID    PPID   RET ARGS
 sleep            5380   5379     0 /usr/bin/sleep 10
 
 {{< / highlight >}}
-
+Originally created by [Brendan Gregg](http://www.brendangregg.com/).
 
 ### execsnoop
 Precedessor of eBPF based execsnoop. Still relevant because it has no dependecies other that awk and works on older Linux kernel versions (3.2+).
@@ -57,16 +57,21 @@ Does not work on many newer systems, try execsnoop (eBPF) first.
 ## Windows
 
 ### Process Monitor
-[_Process Monitor_](https://docs.microsoft.com/en-us/sysinternals/downloads/procmon), part of _Sysinternals Suite_ is an advanced monitoring tool for Windows that can be used to keep track of process creation events.  Can be downloaded as standalone executable from project's website or installed with chocolatey package manager: `choco install procmon`. Also part of [Sysinternals Suite](https://chocolatey.org/packages/sysinternals) package.
+[_Process Monitor_](https://docs.microsoft.com/en-us/sysinternals/downloads/procmon), part of _Sysinternals Suite_ is an advanced monitoring tool for Windows that can be used to keep track of process creation events.  Can be downloaded as standalone executable from project's website or installed with chocolatey package manager: `choco install procmon`. Also part of [Sysinternals Suite](https://chocolatey.org/packages/sysinternals) package. Primarily created by [Mark Russinovich](https://en.wikipedia.org/wiki/Mark_Russinovich) and Bryce Cogswell
 
-![Process Monitor Process ](/post/images/procmon-process-create-operation.png)
+![Process Monitor ](/post/images/procmon-process-create-operation.png)
 
 ### ProcMonX
-Process Monitor X (ProcMonX) is a alternative to ProcMon. ProcMonX provides information on similar activities to ProcMon, but adds many more events, such as networking, ALPC and memory. 
+[Process Monitor X](https://github.com/zodiacon/ProcMonX) (ProcMonX) is a alternative to ProcMon created by [Pavel Yosifovich](https://twitter.com/zodiacon)
+. ProcMonX provides information on similar activities to ProcMon, but adds more events, such as networking, ALPC and memory. Can be downloaded as standalone executable [from here](https://github.com/zodiacon/ProcMonX/releases/download/0.21-beta/ProcMonX.0.21.zip).
+
+![Process Monitor X](/post/images/procmonx-process-create-operation.png)
+
+![Process Monitor X](/post/images/procmonx-process-create-operation-log.png)
 
 
 ### PowerShell
-Microsoft Scripting Guy, Ed Wilson shown that PowerShell can be used to monitor process creation.
+Microsoft Scripting Guy, [Ed Wilson](https://edwilson.com/) shown that PowerShell can be used to monitor process creation.
 
 {{< highlight plain >}}
 Register-CimIndicationEvent `
@@ -108,7 +113,7 @@ dtrace: system integrity protection is on, some features will not be available
 dtrace: failed to compile script /usr/bin/newproc.d: line 22: probe description proc:::exec-success does not match any probes. System Integrity Protection is on
 {{< / highlight >}}
 
-El Capitan introduced a security mechanism called System Integrity Protection to help ensure that no malicious parties can modify with the operating system and it severely limits what DTrace can do. 
+El Capitan introduced a security mechanism called System Integrity Protection to help ensure that no malicious parties can modify the operating system and it severely limits what DTrace can do. 
 
 SIP has to be partially diabled
 
