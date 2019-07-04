@@ -61,6 +61,10 @@ Does not work on many newer systems, try execsnoop (eBPF) first.
 
 ![Process Monitor Process ](/post/images/procmon-process-create-operation.png)
 
+### ProcMonX
+Process Monitor X (ProcMonX) is a alternative to ProcMon. ProcMonX provides information on similar activities to ProcMon, but adds many more events, such as networking, ALPC and memory. 
+
+
 ### PowerShell
 Microsoft Scripting Guy, Ed Wilson shown that PowerShell can be used to monitor process creation.
 
@@ -91,6 +95,27 @@ Get-EventSubscriber | Unregister-Event
 
 
 See [this](https://devblogs.microsoft.com/scripting/use-powershell-to-monitor-for-process-startup/) article for details.
+
+## macOS
+### dtrace
+
+`sudo newproc.d` will trace all new process with command line args. It won't work if [System Integrity Protection](https://support.apple.com/en-us/HT204899) is on.
+
+{{< highlight plain >}}
+sudo newproc.d
+dtrace: system integrity protection is on, some features will not be available
+
+dtrace: failed to compile script /usr/bin/newproc.d: line 22: probe description proc:::exec-success does not match any probes. System Integrity Protection is on
+{{< / highlight >}}
+
+El Capitan introduced a security mechanism called System Integrity Protection to help ensure that no malicious parties can modify with the operating system and it severely limits what DTrace can do. 
+
+SIP has to be partially diabled
+
+{{< highlight plain >}}
+csrutil enable --without dtrace # disable dtrace restrictions only
+{{< / highlight >}}
+Reboot and DTrace starts to work.
 
 ## How do these tools work 
 
@@ -158,8 +183,10 @@ Hack from Brendan Gregg's [perf-tools](https://github.com/brendangregg/perf-tool
 
 
 ### Process Monitor
-_Process Monitor_ installs a kernel driver on startup which does the system-wide monitoring of userland processes. Driver API provides the kernel routine [`PsSetCreateProcessNotifyRoutine`](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/ntddk/nf-ntddk-pssetcreateprocessnotifyroutine)/[`PsSetCreateProcessNotifyRoutineEx`](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/ntddk/nf-ntddk-pssetcreateprocessnotifyroutineex) to allow software to monitor process creation and termination events in the Windows kernel. No code here, but [this](https://github.com/microsoft/Windows-driver-samples/blob/41c29cb92feff490270b4ce31f67d7baddecc457/general/obcallback/README.md) example from  Windows Driver Kit (WDK) 10 is close to what we want.
+_Process Monitor_  (ProcMon) installs a kernel driver on startup which does the system-wide monitoring of userland processes. Driver API provides the kernel routine [`PsSetCreateProcessNotifyRoutine`](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/ntddk/nf-ntddk-pssetcreateprocessnotifyroutine)/[`PsSetCreateProcessNotifyRoutineEx`](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/ntddk/nf-ntddk-pssetcreateprocessnotifyroutineex) to allow software to monitor process creation and termination events in the Windows kernel. No code here, but [this](https://github.com/microsoft/Windows-driver-samples/blob/41c29cb92feff490270b4ce31f67d7baddecc457/general/obcallback/README.md) example from  Windows Driver Kit (WDK) 10 is close to what we want.
 
+### ProcMonX
+ProcMonX uses [Event Tracing for Windows (ETW)](https://docs.microsoft.com/pl-pl/windows/win32/etw/event-tracing-portal) (a diagnostics and logging mechanism that existed since Windows 2000) through [Microsoft.Diagnostics.Tracing.TraceEvent](https://github.com/microsoft/perfview/blob/master/documentation/TraceEvent/TraceEventLibrary.md) library.
 
 ### PowerShell
 PowerShell example uses WMI ([Windows Management Instrumentation](https://en.wikipedia.org/wiki/Windows_Management_Instrumentation)) and [`Win32_ProcessStartTrace`](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/krnlprov/win32-processstarttrace) event.
@@ -212,3 +239,8 @@ class ProcessMonitor
     }
 }
 {{< / highlight >}}
+
+## macOS
+### dtrace
+
+DTrace is as dynamic tracing framework for Solaris, macOS and FreeBSD. You can learn more about [DTrace Tools](http://www.brendangregg.com/dtrace.html) and read newproc.d source code [here](https://opensource.apple.com/source/dtrace/dtrace-168/DTTk/Proc/newproc.d.auto.html).
